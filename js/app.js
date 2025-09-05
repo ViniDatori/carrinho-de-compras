@@ -4,7 +4,7 @@ let valorTotal = 0;
 let carrinho = new Map();
 resetarMap();
 
-// Variáveis auxiliares:
+// Variáveis auxiliares (para adicionar/modificar item no carrinho / para definir o preço unitário dos produtos / para definir o preço total de um produto único)
 
 let foneOK = false;
 let celularOK = false;
@@ -25,58 +25,67 @@ function adicionar() {
     let produtoSelecionado = document.getElementById("produto");
     let quantidadeProduto = parseInt(document.getElementById("quantidade").value);
 
-    // Adição do Fone:
-    if (produtoSelecionado.value == "Fone de ouvido - R$100") {
-        carrinho.set("Fone", carrinho.get("Fone") + parseInt(quantidadeProduto));
-        valorTotal = valorTotal + 100 * quantidadeProduto;
-        valorTotalCarrinho("valor-total", `R$${valorTotal}`);
-        if (foneOK == true) {
-            modificarItensCarrinho("p1", carrinho.get("Fone"), "Fone de Ouvido", tFone = tFone + pFone)
-        } else {
-            itensCarrinho("p1", carrinho.get("Fone"), "Fone de Ouvido", tFone = tFone + pFone);
-            foneOK = true;
-        }
+    if (isNaN(quantidadeProduto) || quantidadeProduto <= 0) {
+        alert("Por favor, digite um valor maior que 0.")
     } else {
-        // Adição do Celular:
-        if (produtoSelecionado.value == "Celular - R$1400") {
-            carrinho.set("Celular", carrinho.get("Celular") + parseInt(quantidadeProduto));
-            valorTotal = valorTotal + 1400 * quantidadeProduto;
+        // Adição do Fone:
+        if (produtoSelecionado.value == "Fone de ouvido - R$100") {
+            carrinho.set("Fone", carrinho.get("Fone") + parseInt(quantidadeProduto));
+            valorTotal = valorTotal + 100 * quantidadeProduto;
             valorTotalCarrinho("valor-total", `R$${valorTotal}`);
-            if (celularOK == true) {
-                modificarItensCarrinho("p2", carrinho.get("Celular"), "Celular", tCelular = tCelular + pCelular)
+            if (foneOK == true) {
+                modificarItensCarrinho("p1", carrinho.get("Fone"), "Fone de Ouvido", tFone = tFone + (pFone * quantidadeProduto))
             } else {
-                itensCarrinho("p2", carrinho.get("Celular"), "Celular", tCelular = tCelular + pCelular);
-                celularOK = true;
+                itensCarrinho("p1", carrinho.get("Fone"), "Fone de Ouvido", tFone = tFone + (pFone * quantidadeProduto));
+                foneOK = true;
             }
         } else {
-            // Adição dos Óculos:
-            if (produtoSelecionado.value == "Oculus VR - R$5000") {
-                carrinho.set("Óculos", carrinho.get("Óculos") + parseInt(quantidadeProduto));
-                valorTotal = valorTotal + 5000 * quantidadeProduto;
+            // Adição do Celular:
+            if (produtoSelecionado.value == "Celular - R$1400") {
+                carrinho.set("Celular", carrinho.get("Celular") + parseInt(quantidadeProduto));
+                valorTotal = valorTotal + 1400 * quantidadeProduto;
                 valorTotalCarrinho("valor-total", `R$${valorTotal}`);
-                if (oculosOK == true) {
-                    modificarItensCarrinho("p3", carrinho.get("Óculos VR"), "Óculos", tOculos = tOculos + pOculos)
+                if (celularOK == true) {
+                    modificarItensCarrinho("p2", carrinho.get("Celular"), "Celular", tCelular = tCelular + (pCelular * quantidadeProduto));
                 } else {
-                    itensCarrinho("p3", carrinho.get("Óculos"), "Óculos VR", tOculos = tOculos + pOculos);
-                    oculosOK = true;
+                    itensCarrinho("p2", carrinho.get("Celular"), "Celular", tCelular = tCelular + (pCelular * quantidadeProduto));
+                    celularOK = true;
+                }
+            } else {
+                // Adição dos Óculos:
+                if (produtoSelecionado.value == "Oculus VR - R$5000") {
+                    carrinho.set("Óculos", carrinho.get("Óculos") + parseInt(quantidadeProduto));
+                    valorTotal = valorTotal + 5000 * quantidadeProduto;
+                    valorTotalCarrinho("valor-total", `R$${valorTotal}`);
+                    if (oculosOK == true) {
+                        modificarItensCarrinho("p3", carrinho.get("Óculos"), "Óculos VR", tOculos = tOculos + (pOculos * quantidadeProduto));
+                    } else {
+                        itensCarrinho("p3", carrinho.get("Óculos"), "Óculos VR", tOculos = tOculos + (pOculos * quantidadeProduto));
+                        oculosOK = true;
+                    }
                 }
             }
         }
     }
-    console.log(carrinho);
-    console.log(valorTotal);
 }
 
-// Função para limpar o carrinho:
+// Função para limpar o carrinho e resetar as variáveis aos seus valores originais:
 
 function limpar() {
     resetarMap();
-    // COMANDO PARA REMOVER TODOS OS ITENS ADICIONADOS AO CARRINHO
     valorTotalCarrinho("valor-total", "R$0");
-    console.log(carrinho);
+    valorTotal = 0;
+    tFone = 0;
+    tCelular = 0;
+    tOculos = 0;
+    foneOK = false;
+    celularOK = false;
+    oculosOK = false;
+    document.getElementById("lista-produtos").innerHTML = "";
+    document.getElementById("quantidade").value = "1";
 }
 
-// Funções que manipulam, respectivamente, os produtos da lista e o valor total:
+// Função que adiciona itens no carrinho manipulando o HTML e mantendo os estilos:
 
 function itensCarrinho(id, qtd, nome, preco) {
 
@@ -107,17 +116,19 @@ function itensCarrinho(id, qtd, nome, preco) {
     itens.appendChild(produto);
 }
 
+// Função que modifica um item já adicionado no carrinho manipulando o HTML e mantendo os estilos:
+
 function modificarItensCarrinho(id, novaQtd, novoNome, novoPreco) {
     let produto = document.getElementById(id);
-
     if (produto) {
         let spans = produto.querySelectorAll(".texto-azul");
         spans[0].textContent = `${novaQtd}x`;
         produto.childNodes[1].nodeValue = " " + novoNome + " ";
         spans[1].textContent = `R$${novoPreco}.`;
     }
-
 }
+
+// Função que altera o valor total de todos os itens do carrinho:
 
 function valorTotalCarrinho(id2, texto2) {
     let valorTotal = document.getElementById(id2);
